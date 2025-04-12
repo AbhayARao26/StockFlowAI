@@ -4,6 +4,34 @@
 
 StockFlow AI Insights is a powerful financial analytics platform that leverages artificial intelligence to provide personalized stock market insights, trend analysis, and investment recommendations. The platform combines real-time market data with advanced AI algorithms to help investors make informed decisions.
 
+## Team AI-gineers
+
+Our team consists of passionate developers and data scientists working together to revolutionize stock market analysis:
+
+- **Abhay A Rao**
+  - Led the backend development and database architecture
+  - Implemented RESTful APIs using Express.js
+  - Designed and implemented MongoDB schemas and data models
+  - Set up authentication and authorization systems
+  - Integrated real-time data processing pipelines
+  - Optimized database queries and performance
+
+- **Aditya CP**
+  - Spearheaded frontend development using React and TypeScript
+  - Designed and implemented responsive UI components
+  - Created interactive dashboards and data visualizations
+  - Integrated real-time data updates and WebSocket connections
+  - Implemented state management and data fetching logic
+  - Built user authentication flows and protected routes
+
+- **Abhay Raghavendra Revankar**
+  - Curated and processed financial datasets
+  - Developed and integrated the AI-powered chatbot system
+  - Implemented data preprocessing pipelines
+  - Created training datasets for AI models
+  - Integrated Google Gemini API for natural language processing
+  - Developed data validation and cleaning scripts
+
 ## Features
 
 - **AI-Powered Stock Analysis**: Get intelligent insights on stocks, market trends, and investment opportunities
@@ -114,4 +142,3 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - [Google Gemini API](https://ai.google.dev/) for providing the AI capabilities
 - [MongoDB](https://www.mongodb.com/) for the database
 - [shadcn/ui](https://ui.shadcn.com/) for the UI components
-- All contributors who have helped shape this project
