@@ -11,9 +11,9 @@ import StockExplorer from "./pages/StockExplorer";
 import StockDetail from "./pages/StockDetail";
 import Watchlist from "./pages/Watchlist";
 import NotFound from "./pages/NotFound";
-import Settings from "./pages/Settings";
 import Profile from "./pages/Profile";
 import Insights from "./pages/Insights";
+import AIChat from "./pages/AIChat";
 import ChatbotButton from "./components/chatbot/ChatbotButton";
 import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/auth/ProtectedRoute';
@@ -59,14 +59,14 @@ const App = () => (
                   <Watchlist />
                 </ProtectedRoute>
               } />
-              <Route path="/settings" element={
-                <ProtectedRoute>
-                  <Settings />
-                </ProtectedRoute>
-              } />
               <Route path="/profile" element={
                 <ProtectedRoute>
                   <Profile />
+                </ProtectedRoute>
+              } />
+              <Route path="/ai-chat" element={
+                <ProtectedRoute>
+                  <AIChat />
                 </ProtectedRoute>
               } />
               

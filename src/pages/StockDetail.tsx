@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import PageContainer from '@/components/layout/PageContainer';
 import StockChart from '@/components/charts/StockChart';
@@ -14,17 +13,16 @@ import {
   LineChart, 
   CandlestickChart,
   AlertCircle,
-  IndianRupee
+  IndianRupee,
+  Loader2
 } from 'lucide-react';
 import { 
   Stock, 
   mockStocks, 
   generateMockHistoricalData,
-  addToWatchlist,
-  removeFromWatchlist,
-  isInWatchlist
 } from '@/lib/mockData';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
+import { watchlistAPI } from '@/lib/api';
 
 const StockDetail = () => {
   const { symbol } = useParams<{ symbol: string }>();
@@ -37,10 +35,27 @@ const StockDetail = () => {
   // State for chart options
   const [timeRange, setTimeRange] = useState<'1D' | '1W' | '1M' | '3M' | '1Y' | 'MAX'>('1M');
   const [chartType, setChartType] = useState<'line' | 'area' | 'bar'>('area');
-  const [inWatchlist, setInWatchlist] = useState<boolean>(isInWatchlist(symbol || ''));
+  const [inWatchlist, setInWatchlist] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   
   // Get historical data
   const stockHistory = symbol ? generateMockHistoricalData(symbol, 365) : [];
+
+  // Check if stock is in watchlist on component mount
+  useEffect(() => {
+    const checkWatchlist = async () => {
+      try {
+        const watchlist = await watchlistAPI.getWatchlist();
+        setInWatchlist(watchlist.some(item => item.symbol === symbol));
+      } catch (error) {
+        console.error('Error checking watchlist:', error);
+      }
+    };
+
+    if (symbol) {
+      checkWatchlist();
+    }
+  }, [symbol]);
   
   // Handle back button
   const handleBack = () => {
@@ -48,10 +63,14 @@ const StockDetail = () => {
   };
   
   // Handle watchlist toggle
-  const toggleWatchlist = () => {
-    if (stock) {
+  const toggleWatchlist = async () => {
+    if (!stock) return;
+
+    try {
+      setIsLoading(true);
+      
       if (inWatchlist) {
-        removeFromWatchlist(stock.symbol);
+        await watchlistAPI.removeFromWatchlist(stock.symbol);
         setInWatchlist(false);
         toast({
           title: "Removed from Watchlist",
@@ -59,7 +78,7 @@ const StockDetail = () => {
           variant: "default",
         });
       } else {
-        addToWatchlist(stock.symbol);
+        await watchlistAPI.addToWatchlist(stock.symbol, stock.name);
         setInWatchlist(true);
         toast({
           title: "Added to Watchlist",
@@ -67,6 +86,20 @@ const StockDetail = () => {
           variant: "default",
         });
       }
+    } catch (error: any) {
+      console.error('Error toggling watchlist:', error);
+      toast({
+        title: "Error",
+        description: error.response?.data?.message || "Failed to update watchlist",
+        variant: "destructive",
+      });
+
+      // If unauthorized, redirect to login
+      if (error.response?.status === 401) {
+        navigate('/login');
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
   
@@ -132,8 +165,13 @@ const StockDetail = () => {
             variant={inWatchlist ? "default" : "outline"}
             className={`mt-2 sm:mt-0 ${inWatchlist ? 'bg-stockflow-gold hover:bg-stockflow-darkGold' : ''}`}
             onClick={toggleWatchlist}
+            disabled={isLoading}
           >
-            <Star className={`h-4 w-4 mr-2 ${inWatchlist ? 'fill-white' : 'fill-none'}`} />
+            {isLoading ? (
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            ) : (
+              <Star className={`h-4 w-4 mr-2 ${inWatchlist ? 'fill-white' : 'fill-none'}`} />
+            )}
             {inWatchlist ? 'In Watchlist' : 'Add to Watchlist'}
           </Button>
         </div>

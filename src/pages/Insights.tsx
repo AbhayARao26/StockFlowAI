@@ -1,54 +1,62 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import PageContainer from '@/components/layout/PageContainer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PieChart, Pie, Cell, LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { ChartContainer } from '@/components/ui/chart';
 import { PieChart as PieChartIcon, LineChart as LineChartIcon, BarChart3 } from 'lucide-react';
-
-// Mock data for sector distribution
-const sectorData = [
-  { name: 'Technology', value: 47 },
-  { name: 'Consumer Cyclical', value: 16 },
-  { name: 'Communication Services', value: 19 },
-  { name: 'Healthcare', value: 5 },
-  { name: 'Financial Services', value: 8 },
-  { name: 'Consumer Defensive', value: 5 },
-];
-
-// Mock data for Price vs P/E Ratio
-const priceVsPEData = [
-  { name: 'AAPL', price: 180, peRatio: 30 },
-  { name: 'GOOGL', price: 140, peRatio: 25 },
-  { name: 'TSLA', price: 250, peRatio: 70 },
-  { name: 'JPM', price: 160, peRatio: 15 },
-  { name: 'JNJ', price: 155, peRatio: 20 },
-  { name: 'UNH', price: 450, peRatio: 35 },
-  { name: 'BAC', price: 35, peRatio: 10 },
-];
-
-// Mock data for volume comparison
-const volumeData = [
-  { name: 'TSLA', volume: 85 },
-  { name: 'AAPL', volume: 75 },
-  { name: 'NVDA', volume: 65 },
-  { name: 'BAC', volume: 55 },
-  { name: 'AMZN', volume: 45 },
-  { name: 'MSFT', volume: 35 },
-  { name: 'GOOGL', volume: 25 },
-  { name: 'META', volume: 20 },
-  { name: 'JPM', volume: 15 },
-  { name: 'WMT', volume: 10 },
-];
+import { mockStocks } from '@/lib/mockData';
 
 const COLORS = ['#8b5cf6', '#06b6d4', '#10b981', '#f59e0b', '#ef4444', '#ec4899'];
 
 const Insights = () => {
+  // Calculate sector distribution
+  const sectorData = useMemo(() => {
+    const sectorTotals = mockStocks.reduce((acc, stock) => {
+      acc[stock.sector] = (acc[stock.sector] || 0) + stock.marketCap;
+      return acc;
+    }, {} as Record<string, number>);
+
+    const total = Object.values(sectorTotals).reduce((sum, value) => sum + value, 0);
+    
+    return Object.entries(sectorTotals).map(([name, value]) => ({
+      name,
+      value: Math.round((value / total) * 100)
+    }));
+  }, []);
+
+  // Prepare price vs P/E ratio data
+  const priceVsPEData = useMemo(() => {
+    const filteredStocks = [...mockStocks] // Create a copy before sorting
+      .filter(stock => stock.peRatio !== undefined && stock.peRatio > 0) // Only include stocks with valid PE ratio
+      .sort((a, b) => b.marketCap - a.marketCap) // Sort by market cap
+      .slice(0, 7); // Take top 7 stocks
+
+    console.log('PE Ratio Data:', filteredStocks.map(s => `${s.symbol}: PE=${s.peRatio}`)); // Debug log
+      
+    return filteredStocks.map(stock => ({
+      name: stock.symbol,
+      price: stock.price,
+      peRatio: stock.peRatio
+    }));
+  }, []);
+
+  // Prepare volume data
+  const volumeData = useMemo(() => {
+    return [...mockStocks] // Create a copy before sorting
+      .sort((a, b) => b.volume - a.volume) // Sort by volume
+      .slice(0, 10) // Take top 10 stocks
+      .map(stock => ({
+        name: stock.symbol,
+        volume: Math.round(stock.volume / 1000000) // Convert to millions
+      }));
+  }, []);
+
   return (
     <PageContainer className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
       <div className="mb-6">
         <h1 className="text-2xl font-bold mb-2">Market Insights</h1>
         <p className="text-gray-500 dark:text-gray-400">
-          Analyze market trends and sector performance
+          Analyze Indian market trends and sector performance
         </p>
       </div>
 
@@ -88,7 +96,7 @@ const Insights = () => {
           <CardHeader className="pb-2">
             <CardTitle className="text-lg flex items-center gap-2">
               <LineChartIcon className="h-5 w-5 text-primary" />
-              Price vs P/E Ratio
+              Price vs P/E Ratio (Top Companies)
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -105,7 +113,7 @@ const Insights = () => {
                     type="monotone"
                     dataKey="price"
                     stroke="#8b5cf6"
-                    name="Price ($)"
+                    name="Price (₹)"
                   />
                   <Line
                     yAxisId="right"
@@ -125,7 +133,7 @@ const Insights = () => {
         <CardHeader className="pb-2">
           <CardTitle className="text-lg flex items-center gap-2">
             <BarChart3 className="h-5 w-5 text-primary" />
-            Volume Comparison (Top 10 Stocks)
+            Trading Volume (Top 10 Stocks)
           </CardTitle>
         </CardHeader>
         <CardContent>

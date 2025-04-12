@@ -1,9 +1,7 @@
-
 import { useToast } from "@/hooks/use-toast";
 
-// We would normally use environment variables for API keys
-// This is just a placeholder for demonstration
-const API_KEY = "YOUR_GEMINI_API_KEY"; 
+// Gemini API key
+const API_KEY = "AIzaSyB0DGKZgzgWh9EcQ7xho5i5-3clHWzeqKs"; 
 
 interface GeminiMessage {
   role: "user" | "model";
@@ -25,47 +23,51 @@ interface GeminiResponse {
   };
 }
 
-export const getGeminiResponse = async (messages: GeminiMessage[]): Promise<string> => {
-  try {
-    // The Gemini API endpoint
-    const endpoint = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent";
-    
-    // Prepare the request body
-    const requestBody = {
-      contents: messages,
-      generationConfig: {
-        temperature: 0.7,
-        topK: 40,
-        topP: 0.95,
-        maxOutputTokens: 1024,
-      },
-      safetySettings: [
-        {
-          category: "HARM_CATEGORY_HARASSMENT",
-          threshold: "BLOCK_MEDIUM_AND_ABOVE"
-        },
-        {
-          category: "HARM_CATEGORY_HATE_SPEECH",
-          threshold: "BLOCK_MEDIUM_AND_ABOVE"
-        },
-        {
-          category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-          threshold: "BLOCK_MEDIUM_AND_ABOVE"
-        },
-        {
-          category: "HARM_CATEGORY_DANGEROUS_CONTENT",
-          threshold: "BLOCK_MEDIUM_AND_ABOVE"
-        }
-      ]
-    };
+// SYSTEM PROMPTS (Prompt Engineering)
+const GENERAL_SYSTEM_PROMPT = `You are an intelligent and helpful AI assistant. 
+Answer clearly, concisely, and accurately. Use friendly and professional language.
+If the question is unclear, ask for clarification.`;
 
-    // Make the API request
+const STOCK_AGENT_PROMPT = `You are a specialized financial advisor and stock market expert.
+Your role is to provide accurate, well-researched information about stocks, market trends, and investment strategies.
+Always include relevant data points, market context, and potential risks when discussing investments.
+If you're unsure about specific stock information, acknowledge the limitations of your knowledge.
+Remember to include appropriate disclaimers about not providing financial advice.`;
+
+const SUPPORT_AGENT_PROMPT = `You are a helpful customer support specialist for StockFlow AI Insights.
+Your role is to assist users with account-related issues, login problems, and general platform support.
+Provide clear, step-by-step instructions for resolving common issues.
+If you can't resolve a specific issue, guide users to contact human support.
+Always maintain a professional, patient, and helpful tone.`;
+
+// Function to send request to Gemini
+export const getGeminiResponse = async (messages: GeminiMessage[], agentType: 'general' | 'stock' | 'support' = 'general'): Promise<string> => {
+  try {
+    const endpoint = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";
+
+    // Select the appropriate system prompt based on agent type
+    let systemPrompt = GENERAL_SYSTEM_PROMPT;
+    if (agentType === 'stock') {
+      systemPrompt = STOCK_AGENT_PROMPT;
+    } else if (agentType === 'support') {
+      systemPrompt = SUPPORT_AGENT_PROMPT;
+    }
+
+    // Prepend the system prompt (prompt engineering)
+    const engineeredMessages: GeminiMessage[] = [
+      {
+        role: "user",
+        parts: [{ text: systemPrompt }],
+      },
+      ...messages,
+    ];
+
     const response = await fetch(`${endpoint}?key=${API_KEY}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(requestBody),
+      body: JSON.stringify({ contents: engineeredMessages }),
     });
 
     if (!response.ok) {
@@ -75,13 +77,11 @@ export const getGeminiResponse = async (messages: GeminiMessage[]): Promise<stri
     }
 
     const data: GeminiResponse = await response.json();
-    
-    // Check for content filters being triggered
+
     if (data.promptFeedback?.blockReason) {
       throw new Error(`Content blocked: ${data.promptFeedback.blockReason}`);
     }
 
-    // Extract the response text
     if (data.candidates && data.candidates.length > 0) {
       return data.candidates[0].content.parts[0].text;
     }
@@ -93,13 +93,16 @@ export const getGeminiResponse = async (messages: GeminiMessage[]): Promise<stri
   }
 };
 
-// Hook for easy access to the Gemini API with toast notifications
+// Hook with toast notifications
 export const useGeminiApi = () => {
   const { toast } = useToast();
 
-  const sendMessage = async (message: string, previousMessages: GeminiMessage[] = []): Promise<string> => {
+  const sendMessage = async (
+    message: string, 
+    previousMessages: GeminiMessage[] = [],
+    agentType: 'general' | 'stock' | 'support' = 'general'
+  ): Promise<string> => {
     try {
-      // Add the new user message to the conversation
       const updatedMessages = [
         ...previousMessages,
         {
@@ -108,7 +111,7 @@ export const useGeminiApi = () => {
         },
       ];
 
-      const response = await getGeminiResponse(updatedMessages);
+      const response = await getGeminiResponse(updatedMessages, agentType);
       return response;
     } catch (error) {
       toast({

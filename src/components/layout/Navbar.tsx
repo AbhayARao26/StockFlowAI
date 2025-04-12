@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Search, Menu, X, Bell, User, LogOut, Settings } from "lucide-react";
+import { Search, Menu, X, MessageSquare, User, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import ThemeToggle from "@/components/theme/ThemeToggle";
@@ -160,8 +160,13 @@ const Navbar = () => {
 
             <ThemeToggle />
 
-            <Button variant="ghost" size="icon" className="text-gray-700 dark:text-gray-200">
-              <Bell className="h-5 w-5" />
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="text-gray-700 dark:text-gray-200"
+              onClick={() => navigate("/ai-chat")}
+            >
+              <MessageSquare className="h-5 w-5" />
             </Button>
 
             <DropdownMenu>
@@ -174,10 +179,6 @@ const Navbar = () => {
                 <DropdownMenuItem onClick={() => navigate("/profile")}>
                   <User className="h-4 w-4 mr-2" />
                   Profile
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate("/settings")}>
-                  <Settings className="h-4 w-4 mr-2" />
-                  Settings
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={handleLogout}>
                   <LogOut className="h-4 w-4 mr-2" />

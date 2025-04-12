@@ -1,4 +1,3 @@
-
 // Mock stock data for Indian market
 export interface Stock {
   symbol: string;
@@ -20,6 +19,7 @@ export interface Stock {
 
 export interface StockHistoryData {
   date: string;
+  time?: string;
   open: number;
   high: number;
   low: number;
@@ -27,342 +27,97 @@ export interface StockHistoryData {
   volume: number;
 }
 
-// Create 30 mock stocks from various sectors in the Indian market
-export const mockStocks: Stock[] = [
-  // IT Sector
-  {
-    symbol: "TCS",
-    name: "Tata Consultancy Services Ltd.",
-    price: 3912.45,
-    previousClose: 3875.20,
-    change: 37.25,
-    changePercent: 0.96,
-    volume: 1542876,
-    marketCap: 14350000000000,
-    sector: "IT",
-    high52Week: 4043.50,
-    low52Week: 3056.75,
-    peRatio: 29.8,
-    eps: 131.25,
-    dividend: 110.00,
-    beta: 0.78
-  },
-  {
-    symbol: "INFY",
-    name: "Infosys Ltd.",
-    price: 1642.30,
-    previousClose: 1655.85,
-    change: -13.55,
-    changePercent: -0.82,
-    volume: 2563941,
-    marketCap: 6825000000000,
-    sector: "IT",
-    high52Week: 1755.60,
-    low52Week: 1215.45,
-    peRatio: 27.4,
-    eps: 59.86,
-    dividend: 42.00,
-    beta: 0.65
-  },
-  {
-    symbol: "WIPRO",
-    name: "Wipro Ltd.",
-    price: 478.55,
-    previousClose: 482.20,
-    change: -3.65,
-    changePercent: -0.76,
-    volume: 3256984,
-    marketCap: 2620000000000,
-    sector: "IT",
-    high52Week: 494.90,
-    low52Week: 352.65,
-    peRatio: 20.1,
-    eps: 23.86,
-    dividend: 7.00,
-    beta: 0.72
-  },
-  {
-    symbol: "HCLTECH",
-    name: "HCL Technologies Ltd.",
-    price: 1286.75,
-    previousClose: 1275.60,
-    change: 11.15,
-    changePercent: 0.87,
-    volume: 1356987,
-    marketCap: 3485000000000,
-    sector: "IT",
-    high52Week: 1380.45,
-    low52Week: 1005.30,
-    peRatio: 21.3,
-    eps: 60.47,
-    dividend: 32.00,
-    beta: 0.68
-  },
-  {
-    symbol: "TECHM",
-    name: "Tech Mahindra Ltd.",
-    price: 1189.25,
-    previousClose: 1204.50,
-    change: -15.25,
-    changePercent: -1.27,
-    volume: 1458963,
-    marketCap: 1158000000000,
-    sector: "IT",
-    high52Week: 1324.75,
-    low52Week: 943.60,
-    peRatio: 19.8,
-    eps: 60.08,
-    dividend: 25.00,
-    beta: 0.81
-  },
+// Import the actual data files
+import dayData from '../dataCP/day';
+import weekData from '../dataCP/week';
+import monthData from '../dataCP/month';
+import yearData from '../dataCP/year';
+import maxData from '../dataCP/max';
 
-  // Banking & Financial Sector
-  {
-    symbol: "HDFCBANK",
-    name: "HDFC Bank Ltd.",
-    price: 1674.85,
-    previousClose: 1665.35,
-    change: 9.50,
-    changePercent: 0.57,
-    volume: 4235689,
-    marketCap: 12450000000000,
-    sector: "Banking",
-    high52Week: 1757.90,
-    low52Week: 1363.45,
-    peRatio: 22.6,
-    eps: 74.18,
-    dividend: 18.00,
-    beta: 0.92
-  },
-  {
-    symbol: "ICICIBANK",
-    name: "ICICI Bank Ltd.",
-    price: 1023.45,
-    previousClose: 1014.80,
-    change: 8.65,
-    changePercent: 0.85,
-    volume: 3985421,
-    marketCap: 7140000000000,
-    sector: "Banking",
-    high52Week: 1083.55,
-    low52Week: 824.20,
-    peRatio: 20.4,
-    eps: 50.15,
-    dividend: 11.00,
-    beta: 1.05
-  },
-  {
-    symbol: "SBIN",
-    name: "State Bank of India",
-    price: 745.30,
-    previousClose: 739.55,
-    change: 5.75,
-    changePercent: 0.78,
-    volume: 5236974,
-    marketCap: 6650000000000,
-    sector: "Banking",
-    high52Week: 769.80,
-    low52Week: 524.10,
-    peRatio: 10.5,
-    eps: 70.72,
-    dividend: 14.00,
-    beta: 1.21
-  },
-  
-  // Oil & Gas Sector
-  {
-    symbol: "RELIANCE",
-    name: "Reliance Industries Ltd.",
-    price: 2745.65,
-    previousClose: 2756.30,
-    change: -10.65,
-    changePercent: -0.39,
-    volume: 2458963,
-    marketCap: 18560000000000,
-    sector: "Oil & Gas",
-    high52Week: 2855.10,
-    low52Week: 2140.30,
-    peRatio: 25.8,
-    eps: 106.36,
-    dividend: 9.00,
-    beta: 1.12
-  },
-  {
-    symbol: "ONGC",
-    name: "Oil and Natural Gas Corporation Ltd.",
-    price: 268.45,
-    previousClose: 271.20,
-    change: -2.75,
-    changePercent: -1.01,
-    volume: 4125963,
-    marketCap: 3370000000000,
-    sector: "Oil & Gas",
-    high52Week: 285.45,
-    low52Week: 157.35,
-    peRatio: 8.3,
-    eps: 32.38,
-    dividend: 10.50,
-    beta: 1.35
-  },
-  
-  // Automotive Sector
-  {
-    symbol: "TATAMOTORS",
-    name: "Tata Motors Ltd.",
-    price: 892.35,
-    previousClose: 880.15,
-    change: 12.20,
-    changePercent: 1.39,
-    volume: 3654789,
-    marketCap: 3425000000000,
-    sector: "Automotive",
-    high52Week: 950.75,
-    low52Week: 513.80,
-    peRatio: 19.2,
-    eps: 46.44,
-    dividend: 2.00,
-    beta: 1.47
-  },
-  {
-    symbol: "M&M",
-    name: "Mahindra & Mahindra Ltd.",
-    price: 1875.30,
-    previousClose: 1858.65,
-    change: 16.65,
-    changePercent: 0.90,
-    volume: 1235698,
-    marketCap: 2335000000000,
-    sector: "Automotive",
-    high52Week: 1924.55,
-    low52Week: 1365.25,
-    peRatio: 22.6,
-    eps: 82.88,
-    dividend: 12.50,
-    beta: 1.18
-  },
-  
-  // FMCG Sector
-  {
-    symbol: "ITC",
-    name: "ITC Ltd.",
-    price: 432.85,
-    previousClose: 435.60,
-    change: -2.75,
-    changePercent: -0.63,
-    volume: 4589632,
-    marketCap: 5410000000000,
-    sector: "FMCG",
-    high52Week: 499.60,
-    low52Week: 325.75,
-    peRatio: 23.8,
-    eps: 18.17,
-    dividend: 12.00,
-    beta: 0.57
-  },
-  {
-    symbol: "HINDUNILVR",
-    name: "Hindustan Unilever Ltd.",
-    price: 2432.60,
-    previousClose: 2451.45,
-    change: -18.85,
-    changePercent: -0.77,
-    volume: 1235698,
-    marketCap: 5715000000000,
-    sector: "FMCG",
-    high52Week: 2768.50,
-    low52Week: 2345.80,
-    peRatio: 65.3,
-    eps: 37.25,
-    dividend: 48.00,
-    beta: 0.48
-  },
-  
-  // Pharma Sector
-  {
-    symbol: "SUNPHARMA",
-    name: "Sun Pharmaceutical Industries Ltd.",
-    price: 1142.85,
-    previousClose: 1139.45,
-    change: 3.40,
-    changePercent: 0.30,
-    volume: 1589632,
-    marketCap: 2740000000000,
-    sector: "Pharmaceutical",
-    high52Week: 1198.70,
-    low52Week: 921.50,
-    peRatio: 33.9,
-    eps: 33.68,
-    dividend: 8.50,
-    beta: 0.64
-  },
-  {
-    symbol: "DRREDDY",
-    name: "Dr. Reddy's Laboratories Ltd.",
-    price: 5678.45,
-    previousClose: 5725.65,
-    change: -47.20,
-    changePercent: -0.82,
-    volume: 456321,
-    marketCap: 945000000000,
-    sector: "Pharmaceutical",
-    high52Week: 5985.35,
-    low52Week: 4512.30,
-    peRatio: 28.7,
-    eps: 197.92,
-    dividend: 35.00,
-    beta: 0.53
-  },
-];
+// Create a list of stock symbols from the data
+const stockSymbols = Object.keys(dayData);
 
-// Generate random historical data for a stock over the past year
+// Create mock stock information based on the actual data
+export const mockStocks: Stock[] = stockSymbols.map(symbol => {
+  // Get the latest data point for this stock
+  const latestData = dayData[symbol] && dayData[symbol].length > 0 
+    ? dayData[symbol][dayData[symbol].length - 1] 
+    : null;
+  
+  // Get the previous data point for calculating change
+  const previousData = dayData[symbol] && dayData[symbol].length > 1 
+    ? dayData[symbol][dayData[symbol].length - 2] 
+    : null;
+  
+  // Calculate change and change percent
+  const change = latestData && previousData 
+    ? latestData.close - previousData.close 
+    : 0;
+  
+  const changePercent = previousData && previousData.close !== 0 
+    ? (change / previousData.close) * 100 
+    : 0;
+  
+  // Get the company name from the symbol (remove .NS suffix)
+  const name = symbol.replace('.NS', '');
+  
+  // Generate some mock data for fields not in the actual data
+  const marketCap = Math.floor(Math.random() * 1000000000000) + 1000000000;
+  const sector = getRandomSector();
+  const high52Week = latestData ? latestData.close * 1.2 : 0;
+  const low52Week = latestData ? latestData.close * 0.8 : 0;
+  
+  return {
+    symbol: symbol.replace('.NS', ''), // Remove .NS suffix for display
+    name: `${name} Ltd.`,
+    price: latestData ? latestData.close : 0,
+    previousClose: previousData ? previousData.close : 0,
+    change,
+    changePercent,
+    volume: latestData ? latestData.volume : 0,
+    marketCap,
+    sector,
+    high52Week,
+    low52Week,
+    peRatio: Math.random() * 30 + 10,
+    eps: Math.random() * 100 + 10,
+    dividend: Math.random() * 50,
+    beta: Math.random() * 1.5 + 0.5
+  };
+});
+
+// Helper function to get a random sector
+function getRandomSector(): string {
+  const sectors = [
+    "IT", "Banking", "Oil & Gas", "Automotive", 
+    "FMCG", "Pharmaceutical", "Real Estate", "Telecom",
+    "Metals", "Consumer Durables", "Capital Goods", "Healthcare"
+  ];
+  return sectors[Math.floor(Math.random() * sectors.length)];
+}
+
+// Function to get historical data for a stock
 export const generateMockHistoricalData = (symbol: string, days: number = 365): StockHistoryData[] => {
-  const mockHistory: StockHistoryData[] = [];
-  const stock = mockStocks.find(s => s.symbol === symbol);
+  // Add .NS suffix if not present
+  const fullSymbol = symbol.includes('.NS') ? symbol : `${symbol}.NS`;
   
-  if (!stock) return [];
-  
-  let basePrice = stock.price * 0.7; // Start around 70% of current price a year ago
-  const volatility = 0.015; // Daily volatility factor
-  
-  const today = new Date();
-  
-  for (let i = days; i >= 0; i--) {
-    const date = new Date(today);
-    date.setDate(date.getDate() - i);
-    
-    // Skip weekends
-    if (date.getDay() === 0 || date.getDay() === 6) continue;
-    
-    // Random daily change based on volatility
-    const dailyChange = basePrice * (volatility * (Math.random() * 2 - 1));
-    const open = basePrice;
-    const close = basePrice + dailyChange;
-    
-    // High is the max of open/close plus some random amount
-    const highExtra = basePrice * volatility * Math.random();
-    const high = Math.max(open, close) + highExtra;
-    
-    // Low is the min of open/close minus some random amount
-    const lowExtra = basePrice * volatility * Math.random();
-    const low = Math.min(open, close) - lowExtra;
-    
-    // Random volume
-    const volume = Math.floor(stock.volume * (0.5 + Math.random()));
-    
-    mockHistory.push({
-      date: date.toISOString().split('T')[0], // Format as YYYY-MM-DD
-      open: parseFloat(open.toFixed(2)),
-      high: parseFloat(high.toFixed(2)),
-      low: parseFloat(low.toFixed(2)),
-      close: parseFloat(close.toFixed(2)),
-      volume
-    });
-    
-    // Set next day's base price to today's close
-    basePrice = close;
+  // Check if we have data for this symbol
+  if (!dayData[fullSymbol]) {
+    return [];
   }
   
-  return mockHistory;
+  // Return the appropriate data based on the requested days
+  if (days <= 1) {
+    return dayData[fullSymbol] || [];
+  } else if (days <= 7) {
+    return weekData[fullSymbol] || [];
+  } else if (days <= 30) {
+    return monthData[fullSymbol] || [];
+  } else if (days <= 365) {
+    return yearData[fullSymbol] || [];
+  } else {
+    return maxData[fullSymbol] || [];
+  }
 };
 
 // Function to get top gainers and losers
@@ -425,7 +180,7 @@ export const getUniqueSectors = (): string[] => {
 };
 
 // Mock watchlist data
-let watchlist: string[] = ["TCS", "RELIANCE", "HDFCBANK"];
+let watchlist: string[] = ["RELIANCE", "TCS", "HDFCBANK"];
 
 export const getWatchlist = (): Stock[] => {
   return mockStocks.filter(stock => watchlist.includes(stock.symbol));

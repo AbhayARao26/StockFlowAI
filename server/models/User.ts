@@ -5,8 +5,12 @@ interface IUser {
   name: string;
   email: string;
   password: string;
+  bio?: string;
+  location?: string;
+  phone?: string;
   createdAt: Date;
   updatedAt: Date;
+  __v: number;
 }
 
 interface IUserMethods {
@@ -34,8 +38,23 @@ const userSchema = new mongoose.Schema<IUser, UserModel, IUserMethods>({
     required: [true, 'Password is required'],
     minlength: [6, 'Password must be at least 6 characters']
   },
+  bio: {
+    type: String,
+    trim: true,
+    default: ''
+  },
+  location: {
+    type: String,
+    trim: true,
+    default: ''
+  },
+  phone: {
+    type: String,
+    trim: true,
+    default: ''
+  }
 }, {
-  timestamps: true,
+  timestamps: true
 });
 
 // Hash password before saving

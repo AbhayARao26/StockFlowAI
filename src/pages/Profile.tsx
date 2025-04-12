@@ -1,5 +1,4 @@
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import PageContainer from "@/components/layout/PageContainer";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -10,15 +9,19 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { profileAPI } from "@/lib/api";
+import { useNavigate } from "react-router-dom";
 
 const Profile = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(true);
   const [formData, setFormData] = useState({
-    fullName: "Rajiv Sharma",
-    email: "rajiv.sharma@example.com",
-    phone: "+91 9876543210",
-    location: "Mumbai, India",
-    bio: "Passionate investor focused on long-term growth in the Indian market."
+    fullName: "",
+    email: "",
+    phone: "",
+    location: "",
+    bio: ""
   });
 
   const [securityData, setSecurityData] = useState({
@@ -26,6 +29,40 @@ const Profile = () => {
     newPassword: "",
     confirmPassword: ""
   });
+
+  // Fetch user profile data on component mount
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        setIsLoading(true);
+        const userData = await profileAPI.getProfile();
+        
+        setFormData({
+          fullName: userData.name || "",
+          email: userData.email || "",
+          phone: userData.phone || "",
+          location: userData.location || "",
+          bio: userData.bio || ""
+        });
+      } catch (error: any) {
+        console.error("Error fetching profile:", error);
+        toast({
+          title: "Error",
+          description: error.response?.data?.message || "Failed to load profile data",
+          variant: "destructive",
+        });
+        
+        // If unauthorized, redirect to login
+        if (error.response?.status === 401) {
+          navigate("/login");
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, [toast, navigate]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -37,15 +74,30 @@ const Profile = () => {
     setSecurityData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleProfileUpdate = (e: React.FormEvent) => {
+  const handleProfileUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast({
-      title: "Profile updated",
-      description: "Your profile information has been saved successfully",
-    });
+    
+    try {
+      setIsLoading(true);
+      await profileAPI.updateProfile(formData);
+      
+      toast({
+        title: "Profile updated",
+        description: "Your profile information has been saved successfully",
+      });
+    } catch (error: any) {
+      console.error("Error updating profile:", error);
+      toast({
+        title: "Error",
+        description: error.response?.data?.message || "Failed to update profile",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handlePasswordUpdate = (e: React.FormEvent) => {
+  const handlePasswordUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (securityData.newPassword !== securityData.confirmPassword) {
@@ -57,17 +109,44 @@ const Profile = () => {
       return;
     }
     
-    toast({
-      title: "Password updated",
-      description: "Your password has been changed successfully",
-    });
-    
-    setSecurityData({
-      currentPassword: "",
-      newPassword: "",
-      confirmPassword: ""
-    });
+    try {
+      setIsLoading(true);
+      await profileAPI.updatePassword(securityData.currentPassword, securityData.newPassword);
+      
+      toast({
+        title: "Password updated",
+        description: "Your password has been changed successfully",
+      });
+      
+      setSecurityData({
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: ""
+      });
+    } catch (error: any) {
+      console.error("Error updating password:", error);
+      toast({
+        title: "Error",
+        description: error.response?.data?.message || "Failed to update password",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+  if (isLoading) {
+    return (
+      <PageContainer>
+        <div className="container mx-auto py-6">
+          <h1 className="text-3xl font-bold mb-6">My Profile</h1>
+          <div className="flex justify-center items-center h-64">
+            <p>Loading profile data...</p>
+          </div>
+        </div>
+      </PageContainer>
+    );
+  }
 
   return (
     <PageContainer>
@@ -80,7 +159,7 @@ const Profile = () => {
               <div className="flex flex-col items-center">
                 <Avatar className="h-24 w-24">
                   <AvatarImage src="https://github.com/shadcn.png" alt="Profile" />
-                  <AvatarFallback>RS</AvatarFallback>
+                  <AvatarFallback>{formData.fullName.substring(0, 2).toUpperCase()}</AvatarFallback>
                 </Avatar>
                 <h2 className="mt-4 text-xl font-bold">{formData.fullName}</h2>
                 <p className="text-sm text-gray-500 dark:text-gray-400">{formData.email}</p>
@@ -91,7 +170,7 @@ const Profile = () => {
                 <div className="w-full space-y-4">
                   <div>
                     <p className="text-sm font-medium">Location</p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">{formData.location}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{formData.location || "Not specified"}</p>
                   </div>
                   <div>
                     <p className="text-sm font-medium">Member Since</p>
@@ -130,6 +209,7 @@ const Profile = () => {
                           name="fullName" 
                           value={formData.fullName} 
                           onChange={handleInputChange}
+                          disabled={isLoading}
                         />
                       </div>
                       <div className="grid gap-2">
@@ -140,6 +220,7 @@ const Profile = () => {
                           type="email" 
                           value={formData.email} 
                           onChange={handleInputChange}
+                          disabled={isLoading}
                         />
                       </div>
                       <div className="grid gap-2">
@@ -149,6 +230,7 @@ const Profile = () => {
                           name="phone" 
                           value={formData.phone} 
                           onChange={handleInputChange}
+                          disabled={isLoading}
                         />
                       </div>
                       <div className="grid gap-2">
@@ -158,6 +240,7 @@ const Profile = () => {
                           name="location" 
                           value={formData.location} 
                           onChange={handleInputChange}
+                          disabled={isLoading}
                         />
                       </div>
                       <div className="grid gap-2">
@@ -167,10 +250,11 @@ const Profile = () => {
                           name="bio" 
                           value={formData.bio}
                           onChange={handleInputChange}
+                          disabled={isLoading}
                         />
                       </div>
-                      <Button type="submit" className="bg-stockflow-gold hover:bg-stockflow-darkGold">
-                        Save Changes
+                      <Button type="submit" className="bg-stockflow-gold hover:bg-stockflow-darkGold" disabled={isLoading}>
+                        {isLoading ? "Saving..." : "Save Changes"}
                       </Button>
                     </form>
                   </CardContent>
@@ -195,6 +279,7 @@ const Profile = () => {
                           type="password" 
                           value={securityData.currentPassword} 
                           onChange={handleSecurityChange}
+                          disabled={isLoading}
                         />
                       </div>
                       <div className="grid gap-2">
@@ -205,6 +290,7 @@ const Profile = () => {
                           type="password" 
                           value={securityData.newPassword} 
                           onChange={handleSecurityChange}
+                          disabled={isLoading}
                         />
                       </div>
                       <div className="grid gap-2">
@@ -215,10 +301,11 @@ const Profile = () => {
                           type="password" 
                           value={securityData.confirmPassword} 
                           onChange={handleSecurityChange}
+                          disabled={isLoading}
                         />
                       </div>
-                      <Button type="submit" className="bg-stockflow-gold hover:bg-stockflow-darkGold">
-                        Update Password
+                      <Button type="submit" className="bg-stockflow-gold hover:bg-stockflow-darkGold" disabled={isLoading}>
+                        {isLoading ? "Updating..." : "Update Password"}
                       </Button>
                     </form>
                   </CardContent>
