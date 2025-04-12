@@ -1,7 +1,5 @@
 # StockFlow AI Insights
 
-![StockFlow AI Insights](https://via.placeholder.com/800x400?text=StockFlow+AI+Insights)
-
 ## Overview
 
 StockFlow AI Insights is a powerful financial analytics platform that leverages artificial intelligence to provide personalized stock market insights, trend analysis, and investment recommendations. The platform combines real-time market data with advanced AI algorithms to help investors make informed decisions.
