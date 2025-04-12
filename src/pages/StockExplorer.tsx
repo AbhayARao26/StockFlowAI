@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import PageContainer from '@/components/layout/PageContainer';
 import { Input } from '@/components/ui/input';
@@ -75,7 +74,7 @@ const StockExplorer = () => {
   const roundedMaxPrice = Math.ceil(maxPrice / 1000) * 1000;
 
   return (
-    <PageContainer>
+    <PageContainer className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
       <div className="mb-6">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">Stock Explorer</h1>
@@ -96,7 +95,7 @@ const StockExplorer = () => {
       
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
         <div className={`md:block ${showFilters ? 'block' : 'hidden'}`}>
-          <Card>
+          <Card className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 shadow-lg hover:shadow-xl transition-shadow duration-200">
             <CardContent className="pt-6">
               <div className="space-y-4">
                 <div>
@@ -166,7 +165,7 @@ const StockExplorer = () => {
         </div>
         
         <div className="md:col-span-3">
-          <Card>
+          <Card className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 shadow-lg hover:shadow-xl transition-shadow duration-200">
             <CardContent className="pt-6">
               <div className="mb-4 flex justify-between items-center">
                 <div className="text-sm text-gray-500 dark:text-gray-400">

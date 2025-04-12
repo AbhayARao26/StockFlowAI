@@ -1,6 +1,5 @@
-
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Stock } from '@/lib/mockData';
 import { ArrowUpRight, ArrowDownRight, ChevronUp, ChevronDown, IndianRupee } from 'lucide-react';
 import SparklineChart from '../charts/SparklineChart';
@@ -19,6 +18,8 @@ const StockTable: React.FC<StockTableProps> = ({
   sortKey, 
   sortDirection = 'asc' 
 }) => {
+  const navigate = useNavigate();
+
   if (!stocks || stocks.length === 0) {
     return (
       <div className="py-8 text-center text-gray-500 dark:text-gray-400">
@@ -132,24 +133,19 @@ const StockTable: React.FC<StockTableProps> = ({
             
             return (
               <tr 
-                key={stock.symbol} 
-                className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
+                key={stock.symbol}
+                className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors cursor-pointer"
+                onClick={() => navigate(`/stock/${stock.symbol}`)}
               >
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <Link 
-                    to={`/stock/${stock.symbol}`}
-                    className="font-medium text-gray-900 dark:text-white hover:text-stockflow-gold"
-                  >
+                  <div className="font-medium text-gray-900 dark:text-white hover:text-stockflow-gold">
                     {stock.symbol}
-                  </Link>
+                  </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <Link 
-                    to={`/stock/${stock.symbol}`}
-                    className="text-gray-500 dark:text-gray-400 hover:text-stockflow-gold"
-                  >
+                  <div className="text-gray-500 dark:text-gray-400 hover:text-stockflow-gold">
                     {stock.name}
-                  </Link>
+                  </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-white">
                   <span className="flex items-center">

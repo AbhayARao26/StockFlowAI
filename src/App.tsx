@@ -2,9 +2,10 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "@/hooks/use-theme";
 import Auth from "./pages/Auth";
+import Landing from "./pages/Landing";
 import Dashboard from "./pages/Dashboard";
 import StockExplorer from "./pages/StockExplorer";
 import StockDetail from "./pages/StockDetail";
@@ -12,8 +13,10 @@ import Watchlist from "./pages/Watchlist";
 import NotFound from "./pages/NotFound";
 import Settings from "./pages/Settings";
 import Profile from "./pages/Profile";
+import Insights from "./pages/Insights";
 import ChatbotButton from "./components/chatbot/ChatbotButton";
 import { AuthProvider } from './contexts/AuthContext';
+import ProtectedRoute from './components/auth/ProtectedRoute';
 
 const queryClient = new QueryClient();
 
@@ -26,14 +29,48 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
             <Routes>
-              <Route path="/" element={<Navigate to="/auth" replace />} />
+              {/* Public Routes */}
+              <Route path="/" element={<Landing />} />
               <Route path="/auth" element={<Auth />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/explorer" element={<StockExplorer />} />
-              <Route path="/stock/:symbol" element={<StockDetail />} />
-              <Route path="/watchlist" element={<Watchlist />} />
-              <Route path="/settings" element={<Settings />} />
-              <Route path="/profile" element={<Profile />} />
+
+              {/* Protected Routes */}
+              <Route path="/dashboard" element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              } />
+              <Route path="/explorer" element={
+                <ProtectedRoute>
+                  <StockExplorer />
+                </ProtectedRoute>
+              } />
+              <Route path="/insights" element={
+                <ProtectedRoute>
+                  <Insights />
+                </ProtectedRoute>
+              } />
+              <Route path="/stock/:symbol" element={
+                <ProtectedRoute>
+                  <StockDetail />
+                </ProtectedRoute>
+              } />
+              <Route path="/watchlist" element={
+                <ProtectedRoute>
+                  <Watchlist />
+                </ProtectedRoute>
+              } />
+              <Route path="/settings" element={
+                <ProtectedRoute>
+                  <Settings />
+                </ProtectedRoute>
+              } />
+              <Route path="/profile" element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              } />
+              
+              {/* 404 Route */}
               <Route path="*" element={<NotFound />} />
             </Routes>
             <ChatbotButton />

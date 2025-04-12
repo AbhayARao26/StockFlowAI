@@ -1,4 +1,3 @@
-
 import React from 'react';
 import PageContainer from '@/components/layout/PageContainer';
 import MarketOverviewCard from '@/components/dashboard/MarketOverviewCard';
@@ -15,7 +14,7 @@ const Dashboard = () => {
   const stockHistory = generateMockHistoricalData(featuredStock.symbol, 180);
   
   return (
-    <PageContainer>
+    <PageContainer className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
       <div className="mb-6">
         <h1 className="text-2xl font-bold mb-2">Market Dashboard</h1>
         <p className="text-gray-500 dark:text-gray-400">
@@ -24,9 +23,11 @@ const Dashboard = () => {
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
-        <MarketOverviewCard />
+        <div className="bg-white/90 dark:bg-gray-800/90 rounded-lg shadow-lg backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 hover:shadow-xl transition-shadow duration-200">
+          <MarketOverviewCard />
+        </div>
         
-        <Card className="shadow-sm md:col-span-2 lg:col-span-2">
+        <Card className="shadow-lg md:col-span-2 lg:col-span-2 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 hover:shadow-xl transition-shadow duration-200">
           <CardHeader className="pb-2">
             <CardTitle className="text-lg">
               Featured Stock: {featuredStock.name} ({featuredStock.symbol})
@@ -63,8 +64,12 @@ const Dashboard = () => {
       </div>
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <TopMoversCard />
-        <SectorPerformanceCard />
+        <div className="bg-white/90 dark:bg-gray-800/90 rounded-lg shadow-lg backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 hover:shadow-xl transition-shadow duration-200">
+          <TopMoversCard />
+        </div>
+        <div className="bg-white/90 dark:bg-gray-800/90 rounded-lg shadow-lg backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 hover:shadow-xl transition-shadow duration-200">
+          <SectorPerformanceCard />
+        </div>
       </div>
     </PageContainer>
   );

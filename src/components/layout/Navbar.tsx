@@ -1,5 +1,4 @@
-
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Search, Menu, X, Bell, User, LogOut, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -12,9 +11,23 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
+import { filterStocks, mockStocks, Stock } from "@/lib/mockData";
+import {
+  Command,
+  CommandDialog,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [showSearchResults, setShowSearchResults] = useState(false);
+  const [searchResults, setSearchResults] = useState<Stock[]>([]);
+  const searchRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -24,6 +37,7 @@ const Navbar = () => {
   const navLinks = [
     { path: "/dashboard", label: "Dashboard" },
     { path: "/explorer", label: "Explorer" },
+    { path: "/insights", label: "Insights" },
     { path: "/watchlist", label: "Watchlist" },
   ];
 
@@ -35,6 +49,69 @@ const Navbar = () => {
     navigate("/auth");
   };
 
+  const handleSearch = (value: string) => {
+    setSearchTerm(value);
+    
+    if (value.trim()) {
+      const filtered = filterStocks(value);
+      setSearchResults(filtered);
+      setShowSearchResults(true);
+    } else {
+      setSearchResults([]);
+      setShowSearchResults(false);
+    }
+  };
+
+  const handleSelect = (stock: Stock) => {
+    navigate(`/stock/${stock.symbol}`);
+    setSearchTerm("");
+    setShowSearchResults(false);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && searchResults.length > 0) {
+      handleSelect(searchResults[0]);
+    }
+  };
+
+  // Close search results when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+        setShowSearchResults(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const SearchResults = () => (
+    <div className="absolute top-full left-0 w-full mt-1 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 max-h-60 overflow-y-auto">
+      {searchResults.length > 0 ? (
+        <div className="py-1">
+          {searchResults.map((stock) => (
+            <div
+              key={stock.symbol}
+              className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer flex items-center justify-between"
+              onClick={() => handleSelect(stock)}
+            >
+              <div>
+                <span className="font-medium">{stock.symbol}</span>
+                <span className="text-gray-500 dark:text-gray-400 ml-2">{stock.name}</span>
+              </div>
+              <span className="text-gray-500 dark:text-gray-400">₹{stock.price.toFixed(2)}</span>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="px-4 py-2 text-gray-500 dark:text-gray-400">
+          No stocks found
+        </div>
+      )}
+    </div>
+  );
+
   return (
     <nav className="sticky top-0 z-40 w-full bg-white/90 dark:bg-stockflow-navy/90 backdrop-blur-md border-b border-gray-200 dark:border-gray-800">
       <div className="container mx-auto px-4 sm:px-6">
@@ -42,9 +119,9 @@ const Navbar = () => {
           <div className="flex items-center">
             <Link to="/dashboard" className="flex items-center">
               <img 
-                src="/lovable-uploads/99fb7d4f-0028-459f-99af-71f6fd8541a9.png" 
+                src="/uploads/99fb7d4f-0028-459f-99af-71f6fd8541a9.png" 
                 alt="StockFlow Logo" 
-                className="h-10 w-auto"
+                className="h-8 w-auto"
               />
               <span className="ml-2 text-xl font-bold text-stockflow-navy dark:text-white">
                 StockFlow
@@ -68,13 +145,17 @@ const Navbar = () => {
           </div>
 
           <div className="hidden md:flex items-center space-x-4">
-            <div className="relative">
+            <div className="relative" ref={searchRef}>
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
               <Input
                 type="text"
                 placeholder="Search stocks..."
                 className="pl-10 w-64 h-9 bg-gray-100 dark:bg-gray-800 border-0"
+                value={searchTerm}
+                onChange={(e) => handleSearch(e.target.value)}
+                onKeyDown={handleKeyDown}
               />
+              {showSearchResults && <SearchResults />}
             </div>
 
             <ThemeToggle />
@@ -143,42 +224,19 @@ const Navbar = () => {
               </Link>
             ))}
             <div className="pt-4 pb-2">
-              <div className="relative px-3">
+              <div className="relative px-3" ref={searchRef}>
                 <Search className="absolute left-6 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                 <Input
                   type="text"
                   placeholder="Search stocks..."
                   className="pl-10 w-full"
+                  value={searchTerm}
+                  onChange={(e) => handleSearch(e.target.value)}
+                  onKeyDown={handleKeyDown}
                 />
+                {showSearchResults && <SearchResults />}
               </div>
             </div>
-            <Link
-              to="/profile"
-              className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              <div className="flex items-center">
-                <User className="h-4 w-4 mr-2" />
-                Profile
-              </div>
-            </Link>
-            <Link
-              to="/settings"
-              className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              <div className="flex items-center">
-                <Settings className="h-4 w-4 mr-2" />
-                Settings
-              </div>
-            </Link>
-            <Button 
-              onClick={handleLogout}
-              className="w-full mt-4 flex items-center justify-center bg-red-500 hover:bg-red-600 text-white"
-            >
-              <LogOut className="h-4 w-4 mr-2" />
-              Logout
-            </Button>
           </div>
         </div>
       )}
