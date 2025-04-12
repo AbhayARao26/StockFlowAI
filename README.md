@@ -1,73 +1,119 @@
-# Welcome to your Lovable project
+# StockFlow AI Insights
 
-## Project info
+![StockFlow AI Insights](https://via.placeholder.com/800x400?text=StockFlow+AI+Insights)
 
-**URL**: https://lovable.dev/projects/139cff1a-977e-4285-a743-18affc7d4c40
+## Overview
 
-## How can I edit this code?
+StockFlow AI Insights is a powerful financial analytics platform that leverages artificial intelligence to provide personalized stock market insights, trend analysis, and investment recommendations. The platform combines real-time market data with advanced AI algorithms to help investors make informed decisions.
 
-There are several ways of editing your application.
+## Features
 
-**Use Lovable**
+- **AI-Powered Stock Analysis**: Get intelligent insights on stocks, market trends, and investment opportunities
+- **Personalized Recommendations**: Receive tailored investment suggestions based on your portfolio and preferences
+- **Real-Time Market Data**: Access up-to-date information on stocks, indices, and market movements
+- **Interactive Dashboards**: Visualize market trends and portfolio performance with intuitive charts
+- **Multi-Agent AI System**: 
+  - **Stock Agent**: Specialized financial advisor for market analysis and investment strategies
+  - **Support Agent**: Dedicated assistant for account management and platform support
+- **Secure Authentication**: Robust user authentication and data protection
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/139cff1a-977e-4285-a743-18affc7d4c40) and start prompting.
+## Tech Stack
 
-Changes made via Lovable will be committed automatically to this repo.
+### Frontend
+- **React**: Modern UI framework for building responsive interfaces
+- **TypeScript**: Type-safe JavaScript for enhanced code quality
+- **Vite**: Lightning-fast build tool and development server
+- **Tailwind CSS**: Utility-first CSS framework for rapid UI development
+- **shadcn/ui**: High-quality, accessible UI components
+- **Recharts**: Composable charting library for data visualization
+- **React Query**: Data fetching and state management
+- **React Router**: Client-side routing for single-page applications
 
-**Use your preferred IDE**
+### Backend
+- **Node.js**: JavaScript runtime for server-side operations
+- **Express**: Web framework for building RESTful APIs
+- **MongoDB**: NoSQL database for flexible data storage
+- **Mongoose**: MongoDB object modeling for Node.js
+- **JWT**: Secure authentication with JSON Web Tokens
+- **Google Gemini API**: Advanced AI for natural language processing and insights generation
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## Getting Started
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### Prerequisites
+- Node.js (v18 or higher)
+- npm or yarn
+- MongoDB (local or Atlas)
 
-Follow these steps:
+### Installation
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/yourusername/stockflow-ai-insights.git
+   cd stockflow-ai-insights
+   ```
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+2. **Install dependencies**
+   ```bash
+   # Install frontend dependencies
+   npm install
+   
+   # Install backend dependencies
+   cd server
+   npm install
+   cd ..
+   ```
 
-# Step 3: Install the necessary dependencies.
-npm i
+3. **Set up environment variables**
+   - Create a `.env` file in the server directory with the following variables:
+     ```
+     MONGODB_URI=your_mongodb_connection_string
+     JWT_SECRET=your_jwt_secret
+     GEMINI_API_KEY=your_gemini_api_key
+     ```
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+4. **Start the development servers**
+   ```bash
+   # Start both frontend and backend concurrently
+   npm run start
+   ```
+
+## Project Structure
+
+```
+stockflow-ai-insights/
+├── public/              # Static assets
+├── server/              # Backend server
+│   ├── models/          # Database models
+│   ├── routes/          # API routes
+│   └── index.ts         # Server entry point
+├── src/                 # Frontend source code
+│   ├── components/      # Reusable UI components
+│   ├── hooks/           # Custom React hooks
+│   ├── lib/             # Utility functions and API clients
+│   ├── pages/           # Application pages
+│   └── App.tsx          # Main application component
+├── .env                 # Environment variables
+├── package.json         # Project dependencies
+└── README.md            # Project documentation
 ```
 
-**Edit a file directly in GitHub**
+## Contributing
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-**Use GitHub Codespaces**
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## License
 
-## What technologies are used for this project?
+This project is licensed under the MIT License - see the LICENSE file for details.
 
-This project is built with:
+## Acknowledgments
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/139cff1a-977e-4285-a743-18affc7d4c40) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes it is!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+- [Google Gemini API](https://ai.google.dev/) for providing the AI capabilities
+- [MongoDB](https://www.mongodb.com/) for the database
+- [shadcn/ui](https://ui.shadcn.com/) for the UI components
+- All contributors who have helped shape this project
